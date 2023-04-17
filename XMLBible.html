@@ -38,6 +38,8 @@
 	      background-color: #D9B0C3;
 	      box-shadow: 0 2px 2px -2px rgba(0, 0, 0, .2);
 	      height: 10%;
+	      margin: 1rem;
+	      <!--border:-->  
       }
 
       form {
@@ -182,25 +184,38 @@
         try {
           document.all.responseArea.innerHTML = " ";
           vtext = getVerse(b,c,v);
-      	document.all.responseArea.innerHTML += "<p>" +vtext+ "</p>";
+      	  document.all.responseArea.innerHTML += "<p>" +vtext+ "</p>";
       
-      	// for multi
-      	for(var i = 1; i<nv; i++){
-      		v++
-      		vtext = getVerse(b,c,v);
-      		document.all.responseArea.innerHTML += "<p>" +vtext+ "</p>";		
-      	}
+      	  // for multi
+      	  for(var i = 1; i<nv; i++){
+  	    v++;
+    	    vtext = getVerse(b,c,v);
+      	    document.all.responseArea.innerHTML += "<p>" +vtext+ "</p>";		
+	  }
         }
         catch(error) {
           if (error == "no chapter") {
             var book = xmlDoc.getElementsByTagName("book")[0].getAttribute("name");
             document.all.responseArea.innerHTML += "<b><i>No such chapter " +c+ "</i></b>";
-          }      
-          if (error == "no verse") {
-            var book = xmlDoc.getElementsByTagName("book")[0].getAttribute("name");
-            document.all.responseArea.innerHTML += "<b><i>No such verse " +v+ "</i></b>";
-          }
-        } 
+	  } else {
+	    var hasChap = true;
+	    try {
+	      var testC = c;
+	      testC++;
+	      var testChap = getVerse(b, testC, 1);
+	    } catch (error) {
+	      if (error == "no chapter") {
+	        hasChap = false;		  
+	      }
+	    }
+
+	    if (hasChap == true) {	
+   	      nextChap(i, nv, b, c);
+	    } else {
+	      nextBook(bv, b, i, nv);
+	    }
+	  } // end no chapter
+       } // end catch 
       } // end getResponse
       
       function getVerse(book,chapter,verse) {
@@ -258,21 +273,68 @@
 
       		   if (isStrong && (node.hasAttribute("hebrew") || node.hasAttribute("greek"))) {
       			var lexID = node.getAttribute(node.hasAttribute("hebrew") ? "hebrew" : "greek");
-      	  		result += "<a href='javascript:alert(" + lexID + ")'>";
-        			result += "<i><font size=1 color=blue><sub>";
-        			result += node.getAttribute(node.hasAttribute("hebrew") ? "hebrew" : "greek");
-        			result += "</sub></font></i></a> ";
+//      	  	result += "<a href='javascript:alert(" + lexID + ")'>";
+      	  		result += "<a href='javascript:testOutput(" + lexID + ")'>";
+        		result += "<i><font size=1 color=blue><sub>";
+       			result += node.getAttribute(node.hasAttribute("hebrew") ? "hebrew" : "greek");
+       			result += "</sub></font></i></a> ";
       		   } else {
       	  		result += " ";
       		   }
-		}
-	  }
+		} // end of else-if
+	  } // end of if
 	  return(result);
 	} // end getNodeString
       
+	// testOutput demonstration function
+	function testOutput(content) {
+  	  tempOutput = "<p>clicked on link for <b>Hebrew</b> word:</p><p><b>";
+	  tempOutput += content;
+	  tempOutput += "</b></p>";
+	  document.all.referenceArea.innerHTML = tempOutput;
+	}
 
+	// parameters: loop_counter, number_of_verse, book_number, chapter_number
+	function nextChap(i, nv, b, c) {
+	  try {
+  	    if (i < nv && c != null) {
+	      c++; 
+	      v = 0;
+       	      while (i<nv){
+	        v++;  
+      	        vtext = getVerse(b,c,v);
+      	        document.all.responseArea.innerHTML += "<p>" +vtext+ "</p>";		
+	        i++;
+	      }
+	    }	 
+	  } catch(error) {
+	    if (i < nv) {
+	      nextChap(i, nv, b, c);
+	    } else {
+	      var book = xmlDoc.getElementsByTagName("book")[0].getAttribute("name");
+              document.all.responseArea.innerHTML += "<b><i>No such verse " +v+ "</i></b>";	
+	    }  
+	  } // end catch
+	} // end nextChapter
 
+	// parameters: bible_version, book_number, loop_counter, number_of_verse
+	function nextBook(bv, b, i, nv) {
+	  var XMLBook;
+	  b++;
+	  c = 0;
 
+          if (bv == "kjv") {
+            XMLBook = biblePath + "kjv_by_book/" + b + ".xml";
+          } else {
+            XMLBook = biblePath + "web_by_book/" + b + ".xml";
+          }
+     
+          xmlhttp.open("GET",XMLBook,false);
+          xmlhttp.send();
+          xmlDoc = xmlhttp.responseXML;
+
+	  nextChap(i, nv, b, c);
+	} // end nextBook
 
     </script>
   </head>
