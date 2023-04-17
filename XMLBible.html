@@ -218,26 +218,46 @@
        } // end catch 
       } // end getResponse
       
-      function getVerse(book,chapter,verse) {
-        var verseOutput = xmlDoc.getElementsByTagName("book")[0].getAttribute("name"); 
-        var c = xmlDoc.getElementsByTagName("chapter")[chapter-1];
-        if (c==null)
-      	throw "no chapter";
-        verseOutput += " ";
-        verseOutput += c.getAttribute("number"); 
-        var v = c.getElementsByTagName("verse")[verse-1]
-        if (v==null)
-      	throw "no verse";
-        verseOutput += ":";
-        verseOutput += v.getAttribute("number");
-        verseOutput += " ";
-        for (j=0; j < v.childNodes.length; j++) {
-      	var nodeStr = getNodeString(v.childNodes[j]);
-      	verseOutput += nodeStr;
-        }
-        return(verseOutput);
-      } // end getVerse
-      
+      function getVerse(book, chapter, verse) {
+	var verseOutput = "";
+	if (verse === 1) {
+	  verseOutput += "<br/><br/><b>"; 
+	  verseOutput += xmlDoc.getElementsByTagName("book")[0].getAttribute("name");
+          var c = xmlDoc.getElementsByTagName("chapter")[chapter-1];
+          if (c==null)
+            throw "no chapter";
+          verseOutput += " ";
+          verseOutput += c.getAttribute("number");
+	  verseOutput += "</b><br/><br/>";
+          var v = c.getElementsByTagName("verse")[verse-1]
+          if (v==null)
+            throw "no verse";
+          verseOutput += v.getAttribute("number");
+          verseOutput += ":";
+          verseOutput += " ";
+          for (j=0; j < v.childNodes.length; j++) {
+            var nodeStr = getNodeString(v.childNodes[j]);
+            verseOutput += nodeStr;
+	  }
+	}
+	else {
+          var c = xmlDoc.getElementsByTagName("chapter")[chapter-1];
+          if (c==null)
+            throw "no chapter";
+          var v = c.getElementsByTagName("verse")[verse-1]
+          if (v==null)
+            throw "no verse";
+          verseOutput += v.getAttribute("number");
+          verseOutput += ":";
+          verseOutput += " ";
+          for (j=0; j < v.childNodes.length; j++) {
+            var nodeStr = getNodeString(v.childNodes[j]);
+            verseOutput += nodeStr;
+          }	
+	}
+	return(verseOutput);
+      }      
+
       function getNodeString(node) {
       	var isStrong = document.getElementById('use_strongs').checked;
       	var result = "";
