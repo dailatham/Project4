@@ -153,7 +153,7 @@
         // that hosts this web page to avoid Cross-Domain request restrictions
         biblePath = "/class/csc3004/XMLBible/"
       }
-      
+
       function getresponse () {
         // read input values from user
         var bv = document.getElementById('version').value;
@@ -195,9 +195,12 @@
         }
         catch(error) {
           if (error == "no chapter") {
+	    // report the error
             var book = xmlDoc.getElementsByTagName("book")[0].getAttribute("name");
             document.all.responseArea.innerHTML += "<b><i>No such chapter " +c+ "</i></b>";
 	  } else {
+
+	    // test if chapter exist
 	    var hasChap = true;
 	    try {
 	      var testC = c;
@@ -209,6 +212,7 @@
 	      }
 	    }
 
+	    // use the test result accordingly 
 	    if (hasChap == true) {	
    	      nextChap(i, nv, b, c);
 	    } else {
@@ -305,14 +309,34 @@
 	  } // end of if
 	  return(result);
 	} // end getNodeString
-      
+     
 	// testOutput demonstration function
 	function testOutput(content) {
   	  tempOutput = "<p>clicked on link for <b>Hebrew</b> word:</p><p><b>";
 	  tempOutput += content;
+	  const result = getLexiconEntry(content);
+	  tempOutput += result;;
 	  tempOutput += "</b></p>";
 	  document.all.referenceArea.innerHTML = tempOutput;
 	}
+
+	function getLexiconEntry(strongsNumber) {
+	  var xhttp = new XMLHttpRequest();
+	  xhttp.onreadystatechange = function() {
+	    if (this.readyState == 4 && this.status == 200) {
+	      var xmlDoc = this.responseXML;
+	      var entry = xmlDoc.getElementById(strongsNumber);
+	      var definition = entry.getElementsByTagName("definition")[0].textContent;
+	      // Display the lexicon entry in the appropriate format
+	      // (e.g. create a new div element and set its innerHTML)
+	    }
+	  };
+	  xhttp.open("GET", "/class/csc3004/XMLBible/greek_strongs/grk", true);
+	  xhttp.send();
+
+	  // devide the strongRefnumber by 101 ti get the right book number.
+	 
+      }
 
 	// parameters: loop_counter, number_of_verse, book_number, chapter_number
 	function nextChap(i, nv, b, c) {
@@ -358,6 +382,8 @@
 
     </script>
   </head>
+
+
   <header>
     <form onsubmit="return false">
       <h1>XML Bible | Daisy Latham</h1>
