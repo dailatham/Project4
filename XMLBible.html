@@ -6,7 +6,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:language="en" language="en">
   <head>
     <title>XML Bible | Daisy Latham</title>
 
@@ -300,43 +300,23 @@
       		   // as the contents of a <sub> tag, which will display it as a subscript
       		   // after the word.
       		   // When hebrew, or greek attribute exists, add the strong 
-/*
-	           const id = Math.floor(strongsNumber/101);
 
-        	   var lexPath = "";
-       		   if (node.hasAttribute("hebrew")) {
-        	     lexPath = biblePath + "heb_strongs/heb" + id + ".xml";
-       		   } else {
-        	     lexPath = biblePath + "greek_strongs/grk" + id + ".xml";
-      	 	   }
-
-          	   console.log(lexPath);
-*/
-
-//      		   if (isStrong && (node.hasAttribute("hebrew") || node.hasAttribute("greek"))) {
-
-/*
-      			var lexID = node.getAttribute(node.hasAttribute("hebrew") ? "hebrew" : "greek");
-//      	  	result += "<a href='javascript:alert(" + lexID + ")'>";
-      	  		result += "<a href='javascript:testOutput(" + lexID +")'>";
-        		result += "<i><font size=1 color=blue><sub>";
-       			result += node.getAttribute(node.hasAttribute("hebrew") ? "hebrew" : "greek");
-       			result += "</sub></font></i></a> ";
-*/
 		  if (isStrong) {
 		    if (node.hasAttribute("hebrew")) {
 		      // TEST showlex
 		      if (isStrong) {
+/*
                   	result += "<sub>" + "<a href=\"#\" onclick=\"showLexiconEntry(" 
 			  + node.getAttribute("hebrew") + ")\">" 
-//			  + lexID + ")\">" 
 			  + node.getAttribute("hebrew") + "</a></sub> ";
+*/
+			result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
+          		  + node.getAttribute("hebrew") + ", 'hebrew')\">"
+          		  + node.getAttribute("hebrew") + "</a></sub> ";
+
 		      } else {
 			result += " ";
 		      }
-
-		      // TEST getLex
-
 
 		      // TEST normalX
 		      var lexID = node.getAttribute("hebrew");
@@ -344,19 +324,34 @@
 		      result += "<i><font size=1 color=blue><sub>";
 		      result += node.getAttribute("hebrew");
 		      result += "</sub></font></i></a> ";
+
 		    } else if (node.hasAttribute("greek")){
+		      // TEST showlex
+		      if (isStrong) {
+/*
+                  	result += "<sub>" + "<a href=\"#\" onclick=\"showLexiconEntry(" 
+			  + node.getAttribute("greek") + ")\">" 
+			  + node.getAttribute("greek") + "</a></sub> ";
+*/
+			result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
+          		  + node.getAttribute("greek") + ", 'greek')\">"
+          		  + node.getAttribute("greek") + "</a></sub> ";
+
+		      } else {
+			result += " ";
+		      }
+
+		      // TEST normalX
 		      var lexID = node.getAttribute("greek");
 		      let language = "Greek";
 	 	      result += "<a href='javascript:lexOutputG(" + lexID + ")'>";
 		      result += "<i><font size=1 color=blue><sub>";
 		      result += node.getAttribute("greek");
 		      result += "</sub></font></i></a> ";
-    		    } else {
-      	  	      result += " ";
-      		  }
 		} // end of else-if
 	      } // end of if
 	    } // end node
+	  }
 	  return(result);
 	} // end getNodeString
      
@@ -383,14 +378,12 @@ function lexOutputG(content) {
 
 //......................................................................//
 
-	function showLexiconEntry(ref) {
-		var lang = "hebrew";
-
+	function showLexiconEntry(ref, language) {
 	//generate path to XML file
     var dictPath = biblePath;
 	var savePath;
 	var entryNum;
-    if (lang == "greek") {
+    if (language == "greek") {
 		dictPath += "greek_strongs/grk";
 		entryNum = "G"
     } else {
