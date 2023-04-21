@@ -592,10 +592,17 @@
 	    var bookName
 	    for (var i = 0; i < refArr.length; i++) {
 	      bookName = books[refArr[i].book];
+/*
 	      var link = "<a href='#" + refArr[i].book + "." + refArr[i].chapter 
 	        + "." + refArr[i].verse + "'>" + bookName 
 	        + " " + refArr[i].chapter + ":" + refArr[i].verse + "</a>";
 	      linkHTML += link;
+*/
+      	      var link = "<a href='#' onclick='showVerse(\"" + refArr[i].book + "\", \"" 
+		+ refArr[i].chapter + "\", \"" + refArr[i].verse + "\")'>" + bookName
+        	+ " " + refArr[i].chapter + ":" + refArr[i].verse + "</a>";
+              linkHTML += link;
+
 	    }
 	    document.all.referenceArea.innerHTML = linkHTML;
 
@@ -607,6 +614,20 @@
 
 //......................................................................//
 
+	function showVerse(bookNum, chapterNum, verseNum) {
+	  // retrieve the text of the verse using an API or database query
+	  // for example, you could use the Bible API at https://api.biblia.com/docs/
+	  // then display the text on the page
+	  // for example, you could create a new element and append it to the page
+
+	  tempOutput = "<p>you click on Ref-link: </p>";
+	  tempOutput += "<p><b>";
+	  tempOutput += bookNum + ":" + chapterNum + ":" + verseNum;
+	  document.all.responseArea.innerHTML = tempOutput;
+
+	} // end showVerse
+
+//......................................................................//
 
     </script>
   </head>
