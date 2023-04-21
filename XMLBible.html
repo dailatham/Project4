@@ -329,6 +329,7 @@
 		      if (isStrong) {
                   	result += "<sub>" + "<a href=\"#\" onclick=\"showLexiconEntry(" 
 			  + node.getAttribute("hebrew") + ")\">" 
+//			  + lexID + ")\">" 
 			  + node.getAttribute("hebrew") + "</a></sub> ";
 		      } else {
 			result += " ";
@@ -362,28 +363,6 @@
 
 //......................................................................//
 
-	// testOutput demonstration function
-	function testOutput(content) {
-/*
-  	  var tempOutput = "<p>clicked on link for <b>Hebrew</b> word:</p><p><b>";
-	  tempOutput += content;
-	  const result = getLexiconEntry(content);
-	  tempOutput += "<p>";;
-	  tempOutput += result;
-	  tempOutput += "</p></b></p>";
-	  document.all.referenceArea.innerHTML = tempOutput;
-*/
-	tempOutput = "<p><b>Hebrew</b> word:</p><p><b>";
-	tempOutput += content;
-	tempOutput += "</b></p>";
-	//call XML reader function to display all info about the clicked on number
-    document.all.referenceArea.innerHTML = tempOutput;
-
-	}
-
-
-//......................................................................//
-
 function lexOutputH(content) {
 	tempOutput = "<p><b>Hebrew</b> word:</p><p><b>";
 	tempOutput += content;
@@ -404,47 +383,8 @@ function lexOutputG(content) {
 
 //......................................................................//
 
-/*
-	function getLexiconEntry(strongsNumber, node) {
-	  var xhttp = new XMLHttpRequest();
-	  xhttp.onreadystatechange = function() {
-	    if (this.readyState == 4 && this.status == 200) {
-	      var xmlDoc = this.responseXML;
-	      var entry = xmlDoc.getElementById(strongsNumber);
-	      var definition = entry.getElementsByTagName("definition")[0].textContent;
-	      // Display the lexicon entry in the appropriate format
-	      // (e.g. create a new div element and set its innerHTML)
-	    }
-	  };
-	  xhttp.open("GET", "/class/csc3004/XMLBible/greek_strongs/grk", true);
-	  xhttp.send();
-
-	  // devide the strongRefnumber by 101 ti get the right book number.
-	  //const id = strongsNumber/101
-	  const id = Math.floor(strongsNumber/101);
-
-
-	  lexPath = "/class/csc3004/XMLBible";
-	  if (node.hasAttribute("hebrew")) {
-	    lexPath += "/heb_strongs/heb";
-	    lexPath += id;
-	  } else {
-	    lexPath += "greek_strongs/grk";
-	    lexPath += id;
-	  }
-
-	  console.log(lexPath);
-
-	  return id;	 
-}
-*/
-
-//......................................................................//
-
 	function showLexiconEntry(ref) {
 		var lang = "hebrew";
-	//initialize lexArea
-	document.all.lexiconArea.innerHTML = "<p>";
 
 	//generate path to XML file
     var dictPath = biblePath;
@@ -466,25 +406,59 @@ function lexOutputG(content) {
 	//open XML file
     xmlhttp.open("GET", dictPath, false);
     xmlhttp.send();
-    xmlDict = xmlhttp.responseXML;
+    xmlDoc = xmlhttp.responseXML;
 
 	//get entry and attributes
-	var entry = xmlDict.querySelector("item[id='" + entryNum + "']");
-    //var strong_id = entry.querySelector("strong_id").textContent;
+	var entry = xmlDoc.querySelector("item[id='" + entryNum + "']");
+//    var id = entry.querySelector("strong_id").textContent;
     var title = entry.querySelector("title").textContent;
     var transliteration = entry.querySelector("transliteration").textContent;
     var pronunciation = entry.querySelector("pronunciation").textContent;
     var description = entry.querySelector("description").textContent;
 
-	//display attributes
-	document.all.lexiconArea.innerHTML += "<h1>" + title + "</h1>" + "<br>";
-	document.all.lexiconArea.innerHTML += "<h2>" + strong_id + "</h2>" + "<br>";
-	document.all.lexiconArea.innerHTML += "<h3>" + transliteration + "</h3>" + "<br>";
-	document.all.lexiconArea.innerHTML += "<h4>" + pronunciation + "</h4>" + "<br>";
-    document.all.lexiconArea.innerHTML += description + "</h1>" + "<br>";
-	
-	//end lexArea
-    document.all.lexiconArea.innerHTML = "</p>";
+// print the results
+//console.log('ID:', id);
+console.log('Title:', title);
+console.log('Transliteration:', transliteration);
+console.log('Pronunciation:', pronunciation);
+console.log('Description:', description);
+
+// Concatenate output strings
+var output = "";
+output += "<p style='text-align:center'>" + entryNum + ref + "</p>";
+output += "<p style='text-align:center'><b>" + title + "</b></p>";
+output += "<p>Transliteration: " + transliteration + "</p>";
+output += "<p>Pronunciation: " + pronunciation + "</p>";
+output += "<p>" + description + "</p>";
+
+// Display output
+document.all.lexiconArea.innerHTML = output;
+
+/*
+	// Display ID
+        idOutput += "<p>" + entryNum + ref + "</p>"
+    	document.all.lexiconArea.innerHTML = idOutput;
+
+	// Display title
+        var titleOutput = "";
+	titleOutput += "<p2>" + title + "</p2>"
+    	document.all.lexiconArea.innerHTML = titleOutput;
+
+	// Display transliteration
+        var transliterationOutput = "";
+	transliterationOutput += "<p>Transliteration: " + transliteration + "</p>"
+    	document.all.lexiconArea.innerHTML = transliterationOutput;
+
+	// Display pronunciation
+        var pronunciationOutput = "";
+	pronunciationOutput += "<p>Pronunciation: " + pronunciation + "</p>"
+    	document.all.lexiconArea.innerHTML = pronunciationOutput;
+
+	// Display Discription
+        var descriptionOutput = "";
+	descriptionOutput += "<p>" + description + "</p>"
+    	document.all.lexiconArea.innerHTML = descriptionOutput;
+*/	
 } // end showLexiconEntry
 
 
