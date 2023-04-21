@@ -388,6 +388,7 @@ function lexOutputG(content) {
 
 	//generate path to XML file
     var dictPath = biblePath;
+	var savePath;
 	var entryNum;
     if (lang == "greek") {
 		dictPath += "greek_strongs/grk";
@@ -400,6 +401,7 @@ function lexOutputG(content) {
 
     //files each contain 100 words
     var fileNum = Math.floor(ref / 101);
+	savePath = dictPath;
 	dictPath += fileNum + ".xml";
     console.log("path: " + dictPath);
 
@@ -410,7 +412,25 @@ function lexOutputG(content) {
 
 	//get entry and attributes
 	var entry = xmlDoc.querySelector("item[id='" + entryNum + "']");
-//    var id = entry.querySelector("strong_id").textContent;
+
+	// catch error for example:
+	// Genesis 1: 1 "in the beginning (7225)
+	// -> 7225/101 = 71.5346535 However, H7225 is in heb72
+	if (entry === null) {
+	  var fileNum = Math.ceil(ref / 101);
+          dictPath = savePath + fileNum + ".xml";
+    	  console.log("Error: cant find path | rounding error");
+    	  console.log("new path: " + dictPath);
+
+	  xmlhttp.open("GET", dictPath, false);
+    	  xmlhttp.send();
+    	  xmlDoc = xmlhttp.responseXML;
+
+          //get entry and attributes
+          entry = xmlDoc.querySelector("item[id='" + entryNum + "']");
+	}
+
+    var id = entry.querySelector("strong_id").textContent;
     var title = entry.querySelector("title").textContent;
     var transliteration = entry.querySelector("transliteration").textContent;
     var pronunciation = entry.querySelector("pronunciation").textContent;
@@ -425,7 +445,7 @@ console.log('Description:', description);
 
 // Concatenate output strings
 var output = "";
-output += "<p style='text-align:center'>" + entryNum + ref + "</p>";
+output += "<p style='text-align:center'>" + id + "</p>";
 output += "<p style='text-align:center'><b>" + title + "</b></p>";
 output += "<p>Transliteration: " + transliteration + "</p>";
 output += "<p>Pronunciation: " + pronunciation + "</p>";
@@ -434,31 +454,6 @@ output += "<p>" + description + "</p>";
 // Display output
 document.all.lexiconArea.innerHTML = output;
 
-/*
-	// Display ID
-        idOutput += "<p>" + entryNum + ref + "</p>"
-    	document.all.lexiconArea.innerHTML = idOutput;
-
-	// Display title
-        var titleOutput = "";
-	titleOutput += "<p2>" + title + "</p2>"
-    	document.all.lexiconArea.innerHTML = titleOutput;
-
-	// Display transliteration
-        var transliterationOutput = "";
-	transliterationOutput += "<p>Transliteration: " + transliteration + "</p>"
-    	document.all.lexiconArea.innerHTML = transliterationOutput;
-
-	// Display pronunciation
-        var pronunciationOutput = "";
-	pronunciationOutput += "<p>Pronunciation: " + pronunciation + "</p>"
-    	document.all.lexiconArea.innerHTML = pronunciationOutput;
-
-	// Display Discription
-        var descriptionOutput = "";
-	descriptionOutput += "<p>" + description + "</p>"
-    	document.all.lexiconArea.innerHTML = descriptionOutput;
-*/	
 } // end showLexiconEntry
 
 
