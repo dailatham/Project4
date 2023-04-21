@@ -305,11 +305,7 @@
 		    if (node.hasAttribute("hebrew")) {
 		      // TEST showlex
 		      if (isStrong) {
-/*
-                  	result += "<sub>" + "<a href=\"#\" onclick=\"showLexiconEntry(" 
-			  + node.getAttribute("hebrew") + ")\">" 
-			  + node.getAttribute("hebrew") + "</a></sub> ";
-*/
+
 			result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
           		  + node.getAttribute("hebrew") + ", 'hebrew')\">"
           		  + node.getAttribute("hebrew") + "</a></sub> ";
@@ -318,21 +314,10 @@
 			result += " ";
 		      }
 
-		      // TEST normalX
-		      var lexID = node.getAttribute("hebrew");
-		      result += "<a href='javascript:lexOutputH(" + lexID + ")'>";
-		      result += "<i><font size=1 color=blue><sub>";
-		      result += node.getAttribute("hebrew");
-		      result += "</sub></font></i></a> ";
-
 		    } else if (node.hasAttribute("greek")){
 		      // TEST showlex
 		      if (isStrong) {
-/*
-                  	result += "<sub>" + "<a href=\"#\" onclick=\"showLexiconEntry(" 
-			  + node.getAttribute("greek") + ")\">" 
-			  + node.getAttribute("greek") + "</a></sub> ";
-*/
+
 			result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
           		  + node.getAttribute("greek") + ", 'greek')\">"
           		  + node.getAttribute("greek") + "</a></sub> ";
@@ -341,81 +326,53 @@
 			result += " ";
 		      }
 
-		      // TEST normalX
-		      var lexID = node.getAttribute("greek");
-		      let language = "Greek";
-	 	      result += "<a href='javascript:lexOutputG(" + lexID + ")'>";
-		      result += "<i><font size=1 color=blue><sub>";
-		      result += node.getAttribute("greek");
-		      result += "</sub></font></i></a> ";
 		} // end of else-if
 	      } // end of if
 	    } // end node
 	  }
 	  return(result);
 	} // end getNodeString
-     
-
-//......................................................................//
-
-function lexOutputH(content) {
-	tempOutput = "<p><b>Hebrew</b> word:</p><p><b>";
-	tempOutput += content;
-	tempOutput += "</b></p>";
-	//call XML reader function to display all info about the clicked on number
-    document.all.lexiconArea.innerHTML = tempOutput;
-}
-
-//......................................................................//
-
-function lexOutputG(content) {
-	tempOutput = "<p><b>Greek</b> word:</p><p><b>";
-	tempOutput += content;
-	tempOutput += "</b></p>";
-	//call XML reader function to display all info about the clicked on number
-    document.all.lexiconArea.innerHTML = tempOutput;
-}
 
 //......................................................................//
 
 	function showLexiconEntry(ref, language) {
-	//generate path to XML file
-    var dictPath = biblePath;
-	var savePath;
-	var entryNum;
-    if (language == "greek") {
-		dictPath += "greek_strongs/grk";
-		entryNum = "G"
-    } else {
-		dictPath += "heb_strongs/heb";
-		entryNum = "H";
-	}
-	entryNum += ref;
+	  // creating the path
+    	  var lexPath = biblePath;
+	  var savePath;
+	  var entryNum;
+	  if (language == "greek") {
+	    lexPath += "greek_strongs/grk";
+	    entryNum = "G"
+    	  } else {
+	    lexPath += "heb_strongs/heb";
+	    entryNum = "H";
+	  }
+	  entryNum += ref;
 
-    //files each contain 100 words
-    var fileNum = Math.floor(ref / 101);
-	savePath = dictPath;
-	dictPath += fileNum + ".xml";
-    console.log("path: " + dictPath);
+          //files each contain 100 words
+          var fileNum = Math.floor(ref / 101);
+	  savePath = lexPath;
+	  lexPath += fileNum + ".xml";
+          console.log("path: " + lexPath);
 
-	//open XML file
-    xmlhttp.open("GET", dictPath, false);
-    xmlhttp.send();
-    xmlDoc = xmlhttp.responseXML;
+ 	  //open XML file
+          xmlhttp.open("GET", lexPath, false);
+          xmlhttp.send();
+          xmlDoc = xmlhttp.responseXML;
 
-	//get entry and attributes
-	var entry = xmlDoc.querySelector("item[id='" + entryNum + "']");
+	  //get entry and attributes
+	  var entry = xmlDoc.querySelector("item[id='" + entryNum + "']");
 
-	// catch error for example:
-	// Genesis 1: 1 "in the beginning (7225)
-	// -> 7225/101 = 71.5346535 However, H7225 is in heb72
-	if (entry === null) {
-	  var fileNum = Math.ceil(ref / 101);
-          dictPath = savePath + fileNum + ".xml";
-    	  console.log("Error: cant find path | rounding error");
-    	  console.log("new path: " + dictPath);
+	  // catch error for example:
+	  // Genesis 1: 1 "in the beginning (7225)
+	  // -> 7225/101 = 71.5346535 However, H7225 is in heb72
+	  if (entry === null) {
+	    var fileNum = Math.ceil(ref / 101);
+            lexPath = savePath + fileNum + ".xml";
+    	    console.log("Error: cant find path | rounding error");
+    	    console.log("new path: " + lexPath);
 
-	  xmlhttp.open("GET", dictPath, false);
+	  xmlhttp.open("GET", lexPath, false);
     	  xmlhttp.send();
     	  xmlDoc = xmlhttp.responseXML;
 
@@ -423,31 +380,31 @@ function lexOutputG(content) {
           entry = xmlDoc.querySelector("item[id='" + entryNum + "']");
 	}
 
-    var id = entry.querySelector("strong_id").textContent;
-    var title = entry.querySelector("title").textContent;
-    var transliteration = entry.querySelector("transliteration").textContent;
-    var pronunciation = entry.querySelector("pronunciation").textContent;
-    var description = entry.querySelector("description").textContent;
+        var id = entry.querySelector("strong_id").textContent;
+        var title = entry.querySelector("title").textContent;
+        var transliteration = entry.querySelector("transliteration").textContent;
+        var pronunciation = entry.querySelector("pronunciation").textContent;
+    	var description = entry.querySelector("description").textContent;
 
-// print the results
-//console.log('ID:', id);
-console.log('Title:', title);
-console.log('Transliteration:', transliteration);
-console.log('Pronunciation:', pronunciation);
-console.log('Description:', description);
+	// print the results
+	console.log('ID:', id);
+	console.log('Title:', title);
+	console.log('Transliteration:', transliteration);
+	console.log('Pronunciation:', pronunciation);
+	console.log('Description:', description);
 
-// Concatenate output strings
-var output = "";
-output += "<p style='text-align:center'>" + id + "</p>";
-output += "<p style='text-align:center'><b>" + title + "</b></p>";
-output += "<p>Transliteration: " + transliteration + "</p>";
-output += "<p>Pronunciation: " + pronunciation + "</p>";
-output += "<p>" + description + "</p>";
+	// Concatenate output strings
+	var output = "";
+	output += "<p style='text-align:center'>" + id + "</p>";
+	output += "<p style='text-align:center'><b>" + title + "</b></p>";
+	output += "<p>Transliteration: " + transliteration + "</p>";
+	output += "<p>Pronunciation: " + pronunciation + "</p>";
+	output += "<p>" + description + "</p>";
 
-// Display output
-document.all.lexiconArea.innerHTML = output;
+	// Display output
+	document.all.lexiconArea.innerHTML = output;
 
-} // end showLexiconEntry
+	} // end showLexiconEntry
 
 
 //......................................................................//
