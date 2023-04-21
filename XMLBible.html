@@ -223,6 +223,52 @@
 	  } // end no chapter
        } // end catch 
       } // end getResponse
+
+//......................................................................//
+
+	// parameters: loop_counter, number_of_verse, book_number, chapter_number
+	function nextChap(i, nv, b, c) {
+	  try {
+  	    if (i < nv && c != null) {
+	      c++; 
+	      v = 0;
+       	      while (i<nv){
+	        v++;  
+      	        vtext = getVerse(b,c,v);
+      	        document.all.responseArea.innerHTML += "<p>" +vtext+ "</p>";		
+	        i++;
+	      }
+	    }	 
+	  } catch(error) {
+	    if (i < nv) {
+	      nextChap(i, nv, b, c);
+	    } else {
+	      var book = xmlDoc.getElementsByTagName("book")[0].getAttribute("name");
+              document.all.responseArea.innerHTML += "<b><i>No such verse " +v+ "</i></b>";	
+	    }  
+	  } // end catch
+	} // end nextChapter
+
+//......................................................................//
+
+	// parameters: bible_version, book_number, loop_counter, number_of_verse
+	function nextBook(bv, b, i, nv) {
+	  var XMLBook;
+	  b++;
+	  c = 0;
+
+          if (bv == "kjv") {
+            XMLBook = biblePath + "kjv_by_book/" + b + ".xml";
+          } else {
+            XMLBook = biblePath + "web_by_book/" + b + ".xml";
+          }
+     
+          xmlhttp.open("GET",XMLBook,false);
+          xmlhttp.send();
+          xmlDoc = xmlhttp.responseXML;
+
+	  nextChap(i, nv, b, c);
+	} // end nextBook
       
 //......................................................................//
 
@@ -353,7 +399,7 @@
           var fileNum = Math.floor(ref / 101);
 	  savePath = lexPath;
 	  lexPath += fileNum + ".xml";
-          console.log("path: " + lexPath);
+          console.log("Lex path: " + lexPath);
 
  	  //open XML file
           xmlhttp.open("GET", lexPath, false);
@@ -370,14 +416,14 @@
 	    var fileNum = Math.ceil(ref / 101);
             lexPath = savePath + fileNum + ".xml";
     	    console.log("Error: cant find path | rounding error");
-    	    console.log("new path: " + lexPath);
+    	    console.log("new Lex path: " + lexPath);
 
-	  xmlhttp.open("GET", lexPath, false);
-    	  xmlhttp.send();
-    	  xmlDoc = xmlhttp.responseXML;
+	    xmlhttp.open("GET", lexPath, false);
+    	    xmlhttp.send();
+    	    xmlDoc = xmlhttp.responseXML;
 
-          //get entry and attributes
-          entry = xmlDoc.querySelector("item[id='" + entryNum + "']");
+            //get entry and attributes
+            entry = xmlDoc.querySelector("item[id='" + entryNum + "']");
 	}
 
         var id = entry.querySelector("strong_id").textContent;
@@ -385,6 +431,22 @@
         var transliteration = entry.querySelector("transliteration").textContent;
         var pronunciation = entry.querySelector("pronunciation").textContent;
     	var description = entry.querySelector("description").textContent;
+
+	// Add clickable links for H-lexicon references in the description
+  	var hRefRegex = /H\d{1,5}/g; // Regular expression to match H-lexicon references
+  	description = description.replace(hRefRegex, function (match) {
+    	  // Replace each H-lexicon reference with a clickable link that calls showLexiconEntry
+    	  var hRef = match.substring(1); // Remove the "H" prefix from the reference
+    	  return "<a href=\"#\" onclick=\"showLexiconEntry(" + hRef + ", 'hebrew')\">" + match + "</a>";
+  	});
+
+  	// Add clickable links for G-lexicon references in the description
+  	var gRefRegex = /G\d{1,5}/g; // Regular expression to match G-lexicon references
+  	description = description.replace(gRefRegex, function (match) {
+    	  // Replace each G-lexicon reference with a clickable link that calls showLexiconEntry
+    	  var gRef = match.substring(1); // Remove the "G" prefix from the reference
+    	  return "<a href=\"#\" onclick=\"showLexiconEntry(" + gRef + ", 'greek')\">" + match + "</a>";
+  	});
 
 	// print the results
 	console.log('ID:', id);
@@ -404,54 +466,65 @@
 	// Display output
 	document.all.lexiconArea.innerHTML = output;
 
+	showReferences(ref, language);
+
 	} // end showLexiconEntry
 
-
 //......................................................................//
 
-	// parameters: loop_counter, number_of_verse, book_number, chapter_number
-	function nextChap(i, nv, b, c) {
-	  try {
-  	    if (i < nv && c != null) {
-	      c++; 
-	      v = 0;
-       	      while (i<nv){
-	        v++;  
-      	        vtext = getVerse(b,c,v);
-      	        document.all.responseArea.innerHTML += "<p>" +vtext+ "</p>";		
-	        i++;
-	      }
-	    }	 
-	  } catch(error) {
-	    if (i < nv) {
-	      nextChap(i, nv, b, c);
-	    } else {
-	      var book = xmlDoc.getElementsByTagName("book")[0].getAttribute("name");
-              document.all.responseArea.innerHTML += "<b><i>No such verse " +v+ "</i></b>";	
-	    }  
-	  } // end catch
-	} // end nextChapter
+	function showReferences(lexId, language) {
+ 	  // creating references path accordingly
+	  var refPath = biblePath;
+	  var dict = "";
+	  refPath += "bible_refs_of_strongs_numbers/";
+	  if (language == "hebrew") {
+	    refPath += "bible_refs_by_strongs_num_ot.xml" 
+	    dict = "HEB"
+	  } else {
+	    refPath += "bible_refs_by_strongs_num_nt.xml" 
+	    dict = "GRK"
+	  }
 
-//......................................................................//
+	  // log information
+          console.log("Ref path: " + refPath);
 
-	// parameters: bible_version, book_number, loop_counter, number_of_verse
-	function nextBook(bv, b, i, nv) {
-	  var XMLBook;
-	  b++;
-	  c = 0;
-
-          if (bv == "kjv") {
-            XMLBook = biblePath + "kjv_by_book/" + b + ".xml";
-          } else {
-            XMLBook = biblePath + "web_by_book/" + b + ".xml";
-          }
-     
-          xmlhttp.open("GET",XMLBook,false);
+ 	  //open XML file
+          xmlhttp.open("GET", refPath, false);
           xmlhttp.send();
           xmlDoc = xmlhttp.responseXML;
 
-	  nextChap(i, nv, b, c);
-	} // end nextBook
+          //get entry and attributes
+	  entry = xmlDoc.querySelector("item[number='" + lexId + "'][dict='" + dict + "']");
+
+	  // if entry not null
+	  if (entry) {
+	    var refs = entry.querySelectorAll("ref");
+  	    var refArr = [];
+	    var refObj;
+  	    for (var i = 0; i < refs.length; i++) {
+ 	      refObj = {
+ 	        book: refs[i].getAttribute("b"),
+	        chapter: refs[i].getAttribute("ch"),
+	        verse: refs[i].getAttribute("v")
+	      };
+	      refArr.push(refObj);
+	    }
+	    // console.log(refArr); // or do something else with the array of references
+	    // create links and append to referenceArea
+	    var linkHTML = "";
+	    for (var i = 0; i < refArr.length; i++) {
+	      var link = "<a href='#" + refArr[i].book + "." + refArr[i].chapter 
+	        + "." + refArr[i].verse + "'>" + refArr[i].book 
+	        + " " + refArr[i].chapter + ":" + refArr[i].verse + "</a>";
+	      linkHTML += link;
+	    }
+	    document.all.referenceArea.innerHTML = linkHTML;
+
+	  } else {
+	    console.log("No entry found with number " + lexId + " and dictionary " + dict);
+	  }
+
+	} // end showReferences
 
 //......................................................................//
 
