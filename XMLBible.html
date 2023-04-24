@@ -350,6 +350,7 @@
 //......................................................................//
 
       function getVerse(book, chapter, verse) {
+	var bv = getBV();
 	var verseOutput = "";
 	if (verse === 1) {
 	  verseOutput += "<br/><br/><b>"; 
@@ -381,9 +382,21 @@
           verseOutput += v.getAttribute("number");
           verseOutput += ":";
           verseOutput += " ";
+	  
           for (j=0; j < v.childNodes.length; j++) {
             var nodeStr = getNodeString(v.childNodes[j]);
-            verseOutput += nodeStr;
+/*	    if (bv == "kjv") {
+	      if (nodeStr == ":" || nodeStr == "," || nodeStr == "." || nodeStr == ";") { 
+                verseOutput += nodeStr;
+	      } else {
+                verseOutput += nodeStr;
+	        verseOutput += " ";
+	      }
+	    } else {
+	      verseOutput += nodeStr;
+	    }
+*/
+	    verseOutput += nodeStr;
           }	
 	}
 	return(verseOutput);
@@ -592,12 +605,8 @@
 	    var bookName
 	    for (var i = 0; i < refArr.length; i++) {
 	      bookName = books[refArr[i].book];
-/*
-	      var link = "<a href='#" + refArr[i].book + "." + refArr[i].chapter 
-	        + "." + refArr[i].verse + "'>" + bookName 
-	        + " " + refArr[i].chapter + ":" + refArr[i].verse + "</a>";
-	      linkHTML += link;
-*/
+
+	      // make each link able to handdle onclick
       	      var link = "<a href='#' onclick='showVerse(\"" + refArr[i].book + "\", \"" 
 		+ refArr[i].chapter + "\", \"" + refArr[i].verse + "\")'>" + bookName
         	+ " " + refArr[i].chapter + ":" + refArr[i].verse + "</a>";
@@ -625,7 +634,43 @@
 	  tempOutput += bookNum + ":" + chapterNum + ":" + verseNum;
 	  document.all.responseArea.innerHTML = tempOutput;
 
+        var XMLBook;
+	bv = getBV();
+        if (bv == "kjv") {
+          XMLBook = biblePath + "kjv_by_book/" + bookNum + ".xml";
+        } else {
+          XMLBook = biblePath + "web_by_book/" + bookNum + ".xml";
+        }
+      
+        xmlhttp.open("GET",XMLBook,false);
+        xmlhttp.send();
+        xmlDoc = xmlhttp.responseXML;
+      
+        var bookInfo = "<h6>Book retrieved from file: " + XMLBook + "</h6>";
+        document.all.headArea.innerHTML = "<h1><font color=blue>XML Bible Demo Output</font></h1>"
+      									+ bookInfo;
+
+	  try {
+	    vtext = getVerse(bookNum, chapterNum, verseNum);
+	    document.all.responseArea.innerHTML += "<p>" +vtext+ "</p>";
+	  } catch(error) {
+            if (error == "no chapter") {
+	      // report the error
+              var book = xmlDoc.getElementsByTagName("book")[0].getAttribute("name");
+              document.all.responseArea.innerHTML += "<b><i>No such chapter " +c+ "</i></b>";
+	    } else {
+	      var book = xmlDoc.getElementsByTagName("book")[0].getAttribute("name");
+	      document.all.responseArea.innerHTML += "<b><i>No such verse " +v+ "</i></b>";
+	    } // end else
+	  } // end catch
 	} // end showVerse
+
+//......................................................................//
+
+	function getBV() {
+          var bv = document.getElementById('version').value;
+	  return bv;
+	}
 
 //......................................................................//
 
