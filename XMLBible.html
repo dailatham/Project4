@@ -352,6 +352,7 @@
       function getVerse(book, chapter, verse) {
 	var bv = getBV();
 	var verseOutput = "";
+
 	if (verse === 1) {
 	  verseOutput += "<br/><br/><b>"; 
 	  verseOutput += xmlDoc.getElementsByTagName("book")[0].getAttribute("name");
@@ -367,10 +368,32 @@
           verseOutput += v.getAttribute("number");
           verseOutput += ":";
           verseOutput += " ";
+
+/*
           for (j=0; j < v.childNodes.length; j++) {
             var nodeStr = getNodeString(v.childNodes[j]);
             verseOutput += nodeStr;
 	  }
+*/
+	  // new approch
+	  var prevNodeStr = "";
+	  for (j=0; j < v.childNodes.length; j++) {
+	    var nodeStr = getNodeString(v.childNodes[j]);
+      	    if (bv == "kjv") {
+              // if the prev end with " " 
+              if (prevNodeStr.endsWith(" ") || nodeStr.startsWith(".") || nodeStr.startsWith(",") 
+		|| nodeStr.startsWith(":") || nodeStr.startsWith(";")) {
+                verseOutput += nodeStr;
+              } else {
+                verseOutput += " ";
+                verseOutput += nodeStr;
+              } 
+            } else {
+              verseOutput += nodeStr;
+            }
+            prevNodeStr = nodeStr;
+    	  }
+
 	}
 	else {
           var c = xmlDoc.getElementsByTagName("chapter")[chapter-1];
@@ -382,22 +405,32 @@
           verseOutput += v.getAttribute("number");
           verseOutput += ":";
           verseOutput += " ";
-	  
+/*
           for (j=0; j < v.childNodes.length; j++) {
             var nodeStr = getNodeString(v.childNodes[j]);
-/*	    if (bv == "kjv") {
-	      if (nodeStr == ":" || nodeStr == "," || nodeStr == "." || nodeStr == ";") { 
-                verseOutput += nodeStr;
-	      } else {
-                verseOutput += nodeStr;
-	        verseOutput += " ";
-	      }
-	    } else {
-	      verseOutput += nodeStr;
-	    }
-*/
-	    verseOutput += nodeStr;
+            verseOutput += nodeStr;
           }	
+*/
+
+	  // new approch
+	  var prevNodeStr = "";
+	  for (j=0; j < v.childNodes.length; j++) {
+	    var nodeStr = getNodeString(v.childNodes[j]);
+      	    if (bv == "kjv") {
+              // if the prev end with " " 
+              if (prevNodeStr.endsWith(" ") || nodeStr.startsWith(".") || nodeStr.startsWith(",") 
+		|| nodeStr.startsWith(":") || nodeStr.startsWith(";")) {
+                verseOutput += nodeStr;
+              } else {
+                verseOutput += " ";
+                verseOutput += nodeStr;
+              } 
+            } else {
+              verseOutput += nodeStr;
+            }
+            prevNodeStr = nodeStr;
+    	  }
+
 	}
 	return(verseOutput);
       }      
