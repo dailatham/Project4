@@ -65,7 +65,7 @@
       }
 
       form input {
-	      max-width: 3rem;
+	      max-width: 5rem;
       }
 
       form input[type="submit"] {
@@ -74,7 +74,7 @@
 	      border-radius: 5%;
 	      cursor: pointer;
 	      transition: 0.2s all;
-	      width: auto;
+	      width: fit-content;
       }
 
       /* CONTAINERS */
@@ -258,9 +258,9 @@
         xmlhttp.send();
         xmlDoc = xmlhttp.responseXML;
       
-        var bookInfo = "<h6>Book retrieved from file: " + XMLBook + "</h6>";
-        document.all.headArea.innerHTML = "<h1><font color=blue>XML Bible Demo Output</font></h1>"
-      									+ bookInfo;
+        //var bookInfo = "<h6>Book retrieved from file: " + XMLBook + "</h6>";
+        //document.all.headArea.innerHTML = "<h1><font color=blue>XML Bible Demo Output</font></h1>"
+      	//								+ bookInfo;
         try {
           document.all.responseArea.innerHTML = " ";
           vtext = getVerse(b,c,v);
@@ -465,7 +465,6 @@
       		   // after the word.
       		   // When hebrew, or greek attribute exists, add the strong 
 
-		  if (isStrong) {
 		    if (node.hasAttribute("hebrew")) {
 		      // TEST showlex
 		      if (isStrong) {
@@ -489,9 +488,7 @@
 		      } else {
 			result += " ";
 		      }
-
-		} // end of else-if
-	      } // end of if
+	            } else { result += " "; }
 	    } // end node
 	  }
 	  return(result);
@@ -500,6 +497,7 @@
 //......................................................................//
 
 	function showLexiconEntry(ref, language) {
+	   console.log("ref: " + ref);
 	  // creating the path
     	  var lexPath = biblePath;
 	  var savePath;
@@ -514,8 +512,7 @@
 	  entryNum += ref;
 
           //files each contain 100 words
-          var fileNum = Math.floor(ref / 101);
-	  savePath = lexPath;
+          var fileNum = Math.floor((ref-1)/ 100);
 	  lexPath += fileNum + ".xml";
           console.log("Lex path: " + lexPath);
 
@@ -526,23 +523,6 @@
 
 	  //get entry and attributes
 	  var entry = xmlDoc.querySelector("item[id='" + entryNum + "']");
-
-	  // catch error for example:
-	  // Genesis 1: 1 "in the beginning (7225)
-	  // -> 7225/101 = 71.5346535 However, H7225 is in heb72
-	  if (entry === null) {
-	    var fileNum = Math.ceil(ref / 101);
-            lexPath = savePath + fileNum + ".xml";
-    	    console.log("Error: cant find path | rounding error");
-    	    console.log("new Lex path: " + lexPath);
-
-	    xmlhttp.open("GET", lexPath, false);
-    	    xmlhttp.send();
-    	    xmlDoc = xmlhttp.responseXML;
-
-            //get entry and attributes
-            entry = xmlDoc.querySelector("item[id='" + entryNum + "']");
-	}
 
         var id = entry.querySelector("strong_id").textContent;
         var title = entry.querySelector("title").textContent;
@@ -674,10 +654,10 @@
           xmlhttp.send();
           xmlDoc = xmlhttp.responseXML;
       
-          var bookInfo = "<h6>Book retrieved from file: " + XMLBook + "</h6>";
-          document.all.headArea.innerHTML = "<h1><font color=blue>XML Bible Demo Output</font></h1>"
-      									+ bookInfo;
-
+          //var bookInfo = "<h6>Book retrieved from file: " + XMLBook + "</h6>";
+          //document.all.headArea.innerHTML = "<h1><font color=blue>XML Bible Demo Output</font></h1>"
+          //     									+ bookInfo;
+ 
 	  try {
 	    vtext = getVerse(bookNum, chapterNum, verseNum);
 	    document.all.responseArea.innerHTML += "<p>" +vtext+ "</p>";
@@ -821,6 +801,11 @@
         <input type="checkbox" name="use_strongs" id="use_strongs">
         </span>
         <input type="submit" value="Submit" name="submit" id="submit" onclick="javascript: getresponse()">
+
+
+<!--
+	<input type="submit" value="Submit" alt="Submit your form name="submit" id="submit" onclick="javascript: getresponse()">
+-->
     </form>
     </div>
   </header>
