@@ -467,6 +467,38 @@
 
 		    var lexRef;
 		    var moreLex = false;
+		    var language;
+		    if (isStrong) {
+		      if (node.hasAttribute("hebrew")) {
+			lexRef = node.getAttribute("hebrew");
+			language = "hebrew"
+		      } else if (node.hasAttribute("greek")){
+			lexRef = node.getAttribute("greek");
+			language = "greek"
+		      }
+
+			if (lexRef[0] == '*') {
+			  lexRef = lexRef.slice(1);
+			} else if (lexRef.includes(" ")) {
+			  var lexRefs = lexRef.split(' ');
+			  moreLex = true;
+//			  console.log("lexRefs: " + lexRefs);
+			}
+
+			if (moreLex == true) {
+			  for (var i=0; i<lexRefs.length; i++) {
+			    result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
+          		      + lexRefs[i] + ", '" + language + "')\">"
+          		      + lexRefs[i] + "</a></sub> ";
+			  }
+			} else {
+			  result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
+          		    + lexRef + ", '" + language + "')\">"
+          		    + lexRef + "</a></sub> ";
+			}
+		    }
+
+/*
 		    if (isStrong) {
 		      if (node.hasAttribute("hebrew")) {
 			lexRef = node.getAttribute("hebrew");
@@ -505,16 +537,18 @@
 			if (moreLex == true) {
 			  for (var i=0; i<lexRefs.length; i++) {
 			    result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
-          		      + lexRefs[i] + ", 'hebrew')\">"
+          		      + lexRefs[i] + ", 'greek')\">"
           		      + lexRefs[i] + "</a></sub> ";
 			  }
 			} else {
 			  result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
-          		    + lexRef + ", 'hebrew')\">"
+          		    + lexRef + ", 'greek')\">"
           		    + lexRef + "</a></sub> ";
 			}
 		      }  
-	            } else { result += " "; }
+	            } 
+*/
+		    else { result += " "; }
 	    } // end node
 	  }
 	  return(result);
