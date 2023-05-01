@@ -644,11 +644,6 @@
 	  // then display the text on the page
 	  // for example, you could create a new element and append it to the page
 
-	  tempOutput = "<p>you click on Ref-link: </p>";
-	  tempOutput += "<p><b>";
-	  tempOutput += bookNum + ":" + chapterNum + ":" + verseNum;
-	  document.all.responseArea.innerHTML = tempOutput;
-
           var XMLBook;
 	  bv = getBV();
           if (bv == "kjv") {
@@ -661,13 +656,11 @@
           xmlhttp.send();
           xmlDoc = xmlhttp.responseXML;
       
-          //var bookInfo = "<h6>Book retrieved from file: " + XMLBook + "</h6>";
-          //document.all.headArea.innerHTML = "<h1><font color=blue>XML Bible Demo Output</font></h1>"
-          //     									+ bookInfo;
- 
 	  try {
 	    vtext = getVerse(bookNum, chapterNum, verseNum);
-	    document.all.responseArea.innerHTML += "<p>" +vtext+ "</p>";
+	    tempOutput = "<p><b>" + books[bookNum] + " " + chapterNum + "</b></p>";
+	    document.all.responseArea.innerHTML = tempOutput;
+	    document.all.responseArea.innerHTML += "<p>" + vtext + "</p>";
 	  } catch(error) {
             if (error == "no chapter") {
 	      // report the error
