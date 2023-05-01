@@ -465,29 +465,55 @@
       		   // after the word.
       		   // When hebrew, or greek attribute exists, add the strong 
 
-		    if (node.hasAttribute("hebrew")) {
-		      // TEST showlex
-		      if (isStrong) {
+		    var lexRef;
+		    var moreLex = false;
+		    if (isStrong) {
+		      if (node.hasAttribute("hebrew")) {
+			lexRef = node.getAttribute("hebrew");
+			console.log("lexRef: " + lexRef);
+			if (lexRef[0] == '*') {
+			  lexRef = lexRef.slice(1);
+			} else if (lexRef.includes(" ")) {
+			  var lexRefs = lexRef.split(' ');
+			  moreLex = true;
+			  console.log("lexRefs: " + lexRefs);
+			}
 
-			result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
-          		  + node.getAttribute("hebrew") + ", 'hebrew')\">"
-          		  + node.getAttribute("hebrew") + "</a></sub> ";
+			if (moreLex == true) {
+			  for (var i=0; i<lexRefs.length; i++) {
+			    result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
+          		      + lexRefs[i] + ", 'hebrew')\">"
+          		      + lexRefs[i] + "</a></sub> ";
+			  }
+			} else {
+			  result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
+          		    + lexRef + ", 'hebrew')\">"
+          		    + lexRef + "</a></sub> ";
+			}
 
-		      } else {
-			result += " ";
-		      }
+		      } else if (node.hasAttribute("greek")){
+			lexRef = node.getAttribute("greek");
+			console.log("lexRef: " + lexRef);
+			if (lexRef[0] == '*') {
+			  lexRef = lexRef.slice(1);
+			} else if (lexRef.includes(" ")) {
+			  var lexRefs = lexRef.split(' ');
+			  moreLex = true;
+			  console.log("lexRefs: " + lexRefs);
+			}
 
-		    } else if (node.hasAttribute("greek")){
-		      // TEST showlex
-		      if (isStrong) {
-
-			result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
-          		  + node.getAttribute("greek") + ", 'greek')\">"
-          		  + node.getAttribute("greek") + "</a></sub> ";
-
-		      } else {
-			result += " ";
-		      }
+			if (moreLex == true) {
+			  for (var i=0; i<lexRefs.length; i++) {
+			    result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
+          		      + lexRefs[i] + ", 'hebrew')\">"
+          		      + lexRefs[i] + "</a></sub> ";
+			  }
+			} else {
+			  result += "<sub><a href=\"#\" onclick=\"showLexiconEntry("
+          		    + lexRef + ", 'hebrew')\">"
+          		    + lexRef + "</a></sub> ";
+			}
+		      }  
 	            } else { result += " "; }
 	    } // end node
 	  }
